@@ -5,5 +5,4 @@
 
 ## 💻 Giao diện
 
-![Dashboard Screenshot](assets/images/dashboard-demo.png)
-
+![Dashboard Screenshot](assets/img/dashboard-demo.png)
