@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 require __DIR__ . '/../config/db_connect.php';
@@ -125,7 +126,8 @@ try {
             position: relative;
             width: 100%;
             max-width: 100%;
-            max-height: 250px;
+            min-height: 300px; /* Đặt chiều cao tối thiểu */
+            min-width: 300px; /* Đặt chiều rộng tối thiểu */
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.5s ease, transform 0.5s ease;
@@ -140,13 +142,13 @@ try {
         canvas {
             width: 100% !important;
             height: 100% !important;
-            max-height: 250px;
+            max-height: 300px; /* Giới hạn chiều cao tối đa */
         }
         .chart-loading {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 250px;
+            height: 300px; /* Đồng bộ với min-height của chart-container */
         }
         .stat-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -179,7 +181,6 @@ try {
             border-radius: 0.75rem;
             margin-bottom: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.5s ease-out;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -210,7 +211,6 @@ try {
                     <li><a href="/ad/modules/reviews/manage_reviews.php" class="flex items-center p-4 <?php echo ($current_page == 'manage_reviews.php') ? 'active' : ''; ?>"><i class="fas fa-star mr-2"></i> <span>Quản lý đánh giá</span></a></li>
                     <li><a href="/ad/modules/complaints/manage_complaints.php" class="flex items-center p-4 <?php echo ($current_page == 'manage_complaints.php') ? 'active' : ''; ?>"><i class="fas fa-exclamation-triangle mr-2"></i> <span>Quản lý khiếu nại</span></a></li>
                     <li><a href="/ad/modules/promotions/manage_promotions.php" class="flex items-center p-4 <?php echo ($current_page == 'manage_promotions.php') ? 'active' : ''; ?>"><i class="fas fa-tags mr-2"></i> <span>Quản lý khuyến mãi</span></a></li>
-                    <li><a href="/ad/modules/chat/group_chat.php" class="flex items-center p-4 <?php echo ($current_page == 'group_chat.php') ? 'active' : ''; ?>"><i class="fas fa-comments mr-2"></i> <span>Chat nhóm</span></a></li>
                     <li><a href="/ad/views/report.php" class="flex items-center p-4 <?php echo ($current_page == 'report.php') ? 'active' : ''; ?>"><i class="fas fa-chart-bar mr-2"></i> <span>Báo cáo</span></a></li>
                     <li><a href="/ad/modules/auth/logout.php" class="flex items-center p-4 <?php echo ($current_page == 'logout.php') ? 'active' : ''; ?>"><i class="fas fa-sign-out-alt mr-2"></i> <span>Đăng xuất</span></a></li>
                 </ul>
@@ -406,9 +406,10 @@ try {
                 });
             }
 
-            // Biểu đồ phân bố trạng thái đơn hàng (Tổng quan)
+            // Biểu đồ phân bố trạng thái đơn hàng (Tổng quan) với phần trăm
             if (document.getElementById('dashboardStatusChart')) {
                 const dashboardStatusCtx = document.getElementById('dashboardStatusChart').getContext('2d');
+                const totalOrders = <?php echo $total_orders; ?>;
                 const dashboardStatusData = {
                     labels: ['Đang chờ', 'Đang xử lý', 'Đã giao', 'Đã hủy'],
                     datasets: [{
@@ -420,23 +421,23 @@ try {
                             <?php echo ($orders_by_status['cancelled'] ?? 0); ?>
                         ],
                         backgroundColor: [
-                            'rgba(229, 62, 62, 0.5)',
+                            'rgba(236, 201, 75, 0.5)',
                             'rgba(49, 130, 206, 0.5)',
                             'rgba(72, 187, 120, 0.5)',
-                            'rgba(236, 201, 75, 0.5)'
+                            'rgba(229, 62, 62, 0.5)'
                         ],
                         borderColor: [
-                            'rgba(229, 62, 62, 1)',
+                            'rgba(236, 201, 75, 1)',
                             'rgba(49, 130, 206, 1)',
                             'rgba(72, 187, 120, 1)',
-                            'rgba(236, 201, 75, 1)'
+                            'rgba(229, 62, 62, 1)'
                         ],
                         borderWidth: 1,
                         hoverBackgroundColor: [
-                            'rgba(229, 62, 62, 0.8)',
-                            'rgba(49, 130, 206, 0.8)',
-                            'rgba(72, 187, 120, 0.8)',
-                            'rgba(236, 201, 75, 0.8)'
+                            'rgba(255, 220, 93, 0.8)',
+                            'rgba(89, 173, 252, 0.8)',
+                            'rgba(57, 204, 118, 0.8)',
+                            'rgba(251, 77, 77, 0.8)'
                         ]
                     }]
                 };
@@ -447,24 +448,54 @@ try {
                         responsive: true,
                         maintainAspectRatio: false,
                         animation: { duration: 1500, easing: 'easeInOutQuart' },
+                        aspectRatio: 1, // Giữ tỷ lệ hình tròn khi thu nhỏ
                         plugins: {
-                            legend: { position: 'top', labels: { font: { size: 14 } } },
+                            legend: { 
+                                position: 'top', 
+                                labels: { 
+                                    font: { size: 14 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                const percentage = totalOrders > 0 ? ((value / totalOrders) * 100).toFixed(1) : 0;
+                                                return {
+                                                    text: `${label} (${percentage}%)`,
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    strokeStyle: data.datasets[0].borderColor[i],
+                                                    lineWidth: data.datasets[0].borderWidth,
+                                                    hidden: isNaN(data.datasets[0].data[i]) || data.datasets[0].data[i] === null,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            },
                             title: { display: true, text: 'Phân bố trạng thái đơn hàng', font: { size: 16 } },
-                            tooltip: { callbacks: { label: context => context.label + ': ' + context.parsed + ' đơn' } }
+                            tooltip: { 
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.parsed;
+                                        const label = context.label;
+                                        const percentage = totalOrders > 0 ? ((value / totalOrders) * 100).toFixed(1) : 0;
+                                        return `${label}: ${value} đơn (${percentage}%)`;
+                                    }
+                                }
+                            }
                         }
                     }
                 });
             }
 
-            // Biểu đồ phân bố vai trò người dùng
+            // Biểu đồ phân bố vai trò người dùng với phần trăm
             if (document.getElementById('userRoleChart')) {
                 const userRoleCtx = document.getElementById('userRoleChart').getContext('2d');
+                const totalUsers = <?php echo $total_users; ?>;
                 const userRoleData = {
-                    labels: [
-                        'Admin',
-                        'Nhà hàng',
-                        'Người dùng'
-                    ],
+                    labels: ['Admin', 'Nhà hàng', 'Người dùng'],
                     datasets: [{
                         label: 'Số lượng',
                         data: [
@@ -473,14 +504,14 @@ try {
                             <?php echo (int)($user_roles['user'] ?? 0); ?>
                         ],
                         backgroundColor: [
-                            'rgba(49, 130, 206, 0.7)',
-                            'rgba(72, 187, 120, 0.7)',
-                            'rgba(236, 201, 75, 0.7)'
+                            'rgba(228, 114, 21, 0.7)',
+                            'rgba(18, 139, 220, 0.7)',
+                            'rgba(239, 23, 206, 0.7)'
                         ],
                         borderColor: [
-                            'rgba(49, 130, 206, 1)',
-                            'rgba(72, 187, 120, 1)',
-                            'rgba(236, 201, 75, 1)'
+                            'rgba(252, 137, 44, 0.7)',
+                            'rgba(67, 174, 245, 0.7)',
+                            'rgba(242, 79, 218, 0.7)'
                         ],
                         borderWidth: 1
                     }]
@@ -490,10 +521,45 @@ try {
                     data: userRoleData,
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { duration: 1500, easing: 'easeInOutQuart' },
+                        aspectRatio: 1, // Giữ tỷ lệ hình tròn khi thu nhỏ
                         plugins: {
-                            legend: { position: 'top', labels: { font: { size: 14 } } },
+                            legend: { 
+                                position: 'top', 
+                                labels: { 
+                                    font: { size: 14 },
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                const percentage = totalUsers > 0 ? ((value / totalUsers) * 100).toFixed(1) : 0;
+                                                return {
+                                                    text: `${label} (${percentage}%)`,
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    strokeStyle: data.datasets[0].borderColor[i],
+                                                    lineWidth: data.datasets[0].borderWidth,
+                                                    hidden: isNaN(data.datasets[0].data[i]) || data.datasets[0].data[i] === null,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            },
                             title: { display: true, text: 'Phân bố vai trò người dùng', font: { size: 16 } },
-                            tooltip: { callbacks: { label: context => context.label + ': ' + context.parsed + ' người' } }
+                            tooltip: { 
+                                callbacks: {
+                                    label: function(context) {
+                                        const value = context.parsed;
+                                        const label = context.label;
+                                        const percentage = totalUsers > 0 ? ((value / totalUsers) * 100).toFixed(1) : 0;
+                                        return `${label}: ${value} người (${percentage}%)`;
+                                    }
+                                }
+                            }
                         }
                     }
                 });

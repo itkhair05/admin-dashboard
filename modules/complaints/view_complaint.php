@@ -15,7 +15,7 @@ if (!$complaint_id) {
 
 // Lấy thông tin khiếu nại
 try {
-    $stmt = $pdo->prepare("SELECT id, order_id, user_id, restaurant_id, description, status, resolution, created_at FROM complaints WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT id, order_id, user_id, restaurant_id, description, status, resolution, created_at ,image_path FROM complaints WHERE id = ?");
     $stmt->execute([$complaint_id]);
     $complaint = $stmt->fetch();
     if (!$complaint) {
@@ -42,6 +42,19 @@ try {
     <link href="/ad/assets/css/admin.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+<style>
+    .complaint-image {
+            max-width: 500px;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 0.375rem;
+            margin-top: 10px;
+        }
+        .no-image {
+            color: #718096;
+            font-style: italic;
+        }
+</style>
 </head>
 <body class="flex flex-col h-screen">
     <div class="flex flex-1 overflow-hidden">
@@ -59,7 +72,7 @@ try {
                     <li><a href="/ad/modules/reviews/manage_reviews.php" class="flex items-center"><i class="fas fa-star mr-2"></i> <span>Quản lý đánh giá</span></a></li>
                     <li><a href="/ad/modules/complaints/manage_complaints.php" class="flex items-center active"><i class="fas fa-exclamation-circle mr-2"></i> <span>Quản lý khiếu nại</span></a></li>
                     <li><a href="/ad/modules/promotions/manage_promotions.php" class="flex items-center"><i class="fas fa-tags mr-2"></i> <span>Quản lý khuyến mãi</span></a></li>
-                    <li><a href="/ad/modules/chat/group_chat.php" class="flex items-center"><i class="fas fa-comments mr-2"></i> <span>Chat nhóm</span></a></li>
+                    
                     <li><a href="/ad/modules/auth/logout.php" class="flex items-center"><i class="fas fa-sign-out-alt mr-2"></i> <span>Đăng xuất</span></a></li>
                 </ul>
             </nav>
@@ -103,6 +116,14 @@ try {
                     <div class="form-group">
                         <label>Ngày tạo</label>
                         <input type="text" class="form-control" value="<?php echo htmlspecialchars($complaint['created_at']); ?>" disabled>
+                    </div>
+                    <div class="form-group md:col-span-2">
+                        <label>Ảnh khiếu nại</label>
+                        <?php if ($complaint['image_path'] && file_exists(__DIR__ . '/../../uploads/complaints/' . $complaint['image_path'])): ?>
+                            <img src="/ad/uploads/complaints/<?php echo htmlspecialchars($complaint['image_path']); ?>" alt="Ảnh khiếu nại" class="complaint-image">
+                        <?php else: ?>
+                            <span class="no-image">Không có ảnh</span>
+                        <?php endif; ?>
                     </div>
                     <div class="md:col-span-2">
                         <a href="manage_complaints.php" class="btn btn-secondary">

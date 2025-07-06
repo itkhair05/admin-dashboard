@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <li><a href="/ad/modules/reviews/manage_reviews.php" class="flex items-center"><i class="fas fa-star mr-2"></i> <span>Quản lý đánh giá</span></a></li>
                     <li><a href="/ad/modules/complaints/manage_complaints.php" class="flex items-center active"><i class="fas fa-exclamation-circle mr-2"></i> <span>Quản lý khiếu nại</span></a></li>
                     <li><a href="/ad/modules/promotions/manage_promotions.php" class="flex items-center"><i class="fas fa-tags mr-2"></i> <span>Quản lý khuyến mãi</span></a></li>
-                    <li><a href="/ad/modules/chat/group_chat.php" class="flex items-center"><i class="fas fa-comments mr-2"></i> <span>Chat nhóm</span></a></li>
+                  
                     <li><a href="/ad/modules/auth/logout.php" class="flex items-center"><i class="fas fa-sign-out-alt mr-2"></i> <span>Đăng xuất</span></a></li>
                 </ul>
             </nav>

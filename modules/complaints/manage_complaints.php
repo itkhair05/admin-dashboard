@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 require __DIR__ . '/../../config/db_connect.php';
@@ -62,7 +63,7 @@ if (!in_array($filter_status, $valid_statuses)) {
 // Lấy danh sách khiếu nại
 $complaints = [];
 try {
-    $query = "SELECT id, order_id, user_id, restaurant_id, description, status, resolution, created_at FROM complaints";
+    $query = "SELECT id, order_id, user_id, restaurant_id, description, status, resolution, created_at, image_path FROM complaints";
     if ($filter_status !== 'all') {
         $query .= " WHERE status = ?";
         $stmt = $pdo->prepare($query);
@@ -132,6 +133,16 @@ try {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             animation: fadeIn 0.5s ease-out;
         }
+        .complaint-image {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 0.375rem;
+        }
+        .no-image {
+            color: #718096;
+            font-style: italic;
+        }
     </style>
 </head>
 <body class="flex flex-col h-screen bg-gray-50" data-page="<?php echo $current_page; ?>">
@@ -150,7 +161,7 @@ try {
                     <li><a href="/ad/modules/reviews/manage_reviews.php" class="flex items-center p-4 <?php echo ($current_page == 'manage_reviews.php') ? 'active' : ''; ?>"><i class="fas fa-star mr-2"></i> <span>Quản lý đánh giá</span></a></li>
                     <li><a href="/ad/modules/complaints/manage_complaints.php" class="flex items-center p-4 <?php echo ($current_page == 'manage_complaints.php') ? 'active' : ''; ?>"><i class="fas fa-exclamation-triangle mr-2"></i> <span>Quản lý khiếu nại</span></a></li>
                     <li><a href="/ad/modules/promotions/manage_promotions.php" class="flex items-center p-4 <?php echo ($current_page == 'manage_promotions.php') ? 'active' : ''; ?>"><i class="fas fa-tags mr-2"></i> <span>Quản lý khuyến mãi</span></a></li>
-                    <li><a href="/ad/modules/chat/group_chat.php" class="flex items-center p-4 <?php echo ($current_page == 'group_chat.php') ? 'active' : ''; ?>"><i class="fas fa-comments mr-2"></i> <span>Chat nhóm</span></a></li>
+                    
                     <li><a href="/ad/views/report.php" class="flex items-center p-4 <?php echo ($current_page == 'report.php') ? 'active' : ''; ?>"><i class="fas fa-chart-bar mr-2"></i> <span>Báo cáo</span></a></li>
                     <li><a href="/ad/modules/auth/logout.php" class="flex items-center p-4 <?php echo ($current_page == 'logout.php') ? 'active' : ''; ?>"><i class="fas fa-sign-out-alt mr-2"></i> <span>Đăng xuất</span></a></li>
                 </ul>
@@ -164,10 +175,10 @@ try {
             </div>
             <div class="content" id="content" style="display: none;">
                 <div class="header-card animate__animated animate__fadeInUp">
-                <h1 class="text-3xl font-bold mb-6 flex items-center animate__animated animate__fadeInUp">
-                    <i class="fas fa-exclamation-circle mr-2"></i> Quản lý khiếu nại
-                </h1>
-                <p class="text-sm mt-2">Xử lý các khiếu nại và phản hồi từ khách hàng</p>
+                    <h1 class="text-3xl font-bold mb-6 flex items-center animate__animated animate__fadeInUp">
+                        <i class="fas fa-exclamation-circle mr-2"></i> Quản lý khiếu nại
+                    </h1>
+                    <p class="text-sm mt-2">Xử lý các khiếu nại và phản hồi từ khách hàng</p>
                 </div>
                 <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
                     <div class="alert alert-success animate__animated animate__fadeIn">
@@ -213,6 +224,7 @@ try {
                                     <th>ID Người dùng</th>
                                     <th>ID Nhà hàng</th>
                                     <th>Mô tả</th>
+                                    <th>Ảnh</th>
                                     <th>Trạng thái</th>
                                     <th>Giải pháp</th>
                                     <th>Ngày tạo</th>
@@ -227,6 +239,13 @@ try {
                                     <td><?php echo htmlspecialchars($complaint['user_id'] ?? 'N/A'); ?></td>
                                     <td><?php echo htmlspecialchars($complaint['restaurant_id'] ?? 'N/A'); ?></td>
                                     <td><?php echo htmlspecialchars($complaint['description']); ?></td>
+                                    <td>
+                                        <?php if ($complaint['image_path'] && file_exists(__DIR__ . '/../../uploads/complaints/' . $complaint['image_path'])): ?>
+                                            <img src="/ad/uploads/complaints/<?php echo htmlspecialchars($complaint['image_path']); ?>" alt="Ảnh khiếu nại" class="complaint-image">
+                                        <?php else: ?>
+                                            <span class="no-image">Không có ảnh</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td><?php echo htmlspecialchars($complaint['status']); ?></td>
                                     <td><?php echo htmlspecialchars($complaint['resolution'] ?? 'Chưa có'); ?></td>
                                     <td><?php echo htmlspecialchars($complaint['created_at']); ?></td>

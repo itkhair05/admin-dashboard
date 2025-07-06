@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 01, 2025 at 05:19 AM
+-- Generation Time: Jul 06, 2025 at 10:14 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,103 +35,21 @@ CREATE TABLE `complaints` (
   `description` text NOT NULL,
   `status` enum('pending','resolved','rejected') DEFAULT 'pending',
   `resolution` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `image_path` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `complaints`
 --
 
-INSERT INTO `complaints` (`id`, `order_id`, `user_id`, `restaurant_id`, `description`, `status`, `resolution`, `created_at`) VALUES
-(1, 1, 1, 1, 'Giao sai món', 'resolved', 'khong co', '2025-06-28 16:52:01'),
-(2, 1, 2, 2, 'sai món', 'resolved', 'toi sẽ xử lý', '2025-06-29 05:19:33'),
-(4, 1, 4, 2, 'giao chậm', 'rejected', NULL, '2025-06-29 05:29:16'),
-(5, 1, 4, 2, 'giao chậm', 'resolved', 'tăng cường vận chuyển bạn ơi', '2025-06-29 05:29:19');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_chats`
---
-
-CREATE TABLE `group_chats` (
-  `id` int(11) NOT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `message` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `complaint_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `group_chats`
---
-
-INSERT INTO `group_chats` (`id`, `order_id`, `user_id`, `message`, `created_at`, `complaint_id`) VALUES
-(1, 1, NULL, '', '2025-06-28 17:37:05', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `group_orders`
---
-
-CREATE TABLE `group_orders` (
-  `id` int(11) NOT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `amount` decimal(10,2) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `menu_items`
---
-
-CREATE TABLE `menu_items` (
-  `id` int(11) NOT NULL,
-  `restaurant_id` int(11) DEFAULT NULL,
-  `name` varchar(100) NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `description` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `menu_plans`
---
-
-CREATE TABLE `menu_plans` (
-  `id` int(11) NOT NULL,
-  `restaurant_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `menu_date` date NOT NULL,
-  `menu_items` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `messages`
---
-
-CREATE TABLE `messages` (
-  `id` int(11) NOT NULL,
-  `group_chat_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `message` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `messages`
---
-
-INSERT INTO `messages` (`id`, `group_chat_id`, `user_id`, `message`, `created_at`) VALUES
-(7, 1, 2, 'chào bạn', '2025-06-29 11:51:08');
+INSERT INTO `complaints` (`id`, `order_id`, `user_id`, `restaurant_id`, `description`, `status`, `resolution`, `created_at`, `image_path`) VALUES
+(4, 1, 4, 2, 'giao chậm', 'rejected', NULL, '2025-06-29 05:29:16', 'delay.jpg'),
+(5, 1, 4, 2, 'giao chậm', 'resolved', 'tăng cường vận chuyển bạn ơi!', '2025-06-29 05:29:19', 'delay.jpg'),
+(6, 10, 2, 2, 'thiếu muỗng', 'rejected', NULL, '2025-07-02 09:53:48', 'muong.jpg'),
+(7, 10, 2, 2, 'thiếu muỗng', 'resolved', 'toi sẽ lưu ý!', '2025-07-02 09:53:55', 'muong.jpg'),
+(8, 10, 9, 2, 'sai món', 'rejected', NULL, '2025-07-06 07:27:09', 'order.jpg'),
+(9, 10, 9, 2, 'sai món', 'resolved', NULL, '2025-07-06 07:27:13', 'order.jpg');
 
 -- --------------------------------------------------------
 
@@ -158,9 +76,9 @@ INSERT INTO `orders` (`id`, `user_id`, `restaurant_id`, `total_amount`, `status`
 (7, 9, 3, 100000.00, 'delivered', '2025-06-29 10:04:14', NULL),
 (10, 10, 1, 100000.00, 'delivered', '2025-07-01 11:03:44', NULL),
 (12, 2, 2, 200000.00, 'delivered', '2025-08-01 11:05:36', NULL),
-(13, 2, 2, 200000.00, 'pending', '2025-08-01 11:05:36', NULL),
-(14, 10, 3, 250000.00, 'delivered', '2025-09-02 11:17:01', NULL),
-(15, 10, 3, 250000.00, 'cancelled', '2025-09-02 11:17:01', NULL);
+(13, 2, 2, 200000.00, 'cancelled', '2025-08-01 11:05:36', NULL),
+(16, 9, 3, 120000.00, 'processing', '2025-07-06 08:11:21', NULL),
+(17, 9, 3, 120000.00, 'pending', '2025-07-06 08:11:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -182,8 +100,8 @@ CREATE TABLE `promotions` (
 --
 
 INSERT INTO `promotions` (`id`, `restaurant_id`, `title`, `discount_percentage`, `start_date`, `end_date`) VALUES
-(1, 1, 'Siêu sale ngày hè', 10.00, '2025-07-01', '2025-07-02'),
-(3, 3, 'Vui vẻ', 20.00, '2025-06-30', '2025-07-01');
+(1, 1, 'Siêu sale ngày hè', 20.00, '2025-07-01', '2025-07-10'),
+(3, 3, 'Vui vẻ', 15.00, '2025-06-30', '2025-07-01');
 
 -- --------------------------------------------------------
 
@@ -205,9 +123,9 @@ CREATE TABLE `restaurants` (
 --
 
 INSERT INTO `restaurants` (`id`, `name`, `address`, `owner_id`, `status`, `image`) VALUES
-(1, 'CƠM QUÊ', 'Trung tâm Q1', 4, 'approved', 'uploads/1751128932_images.png'),
-(2, 'UTH', 'Q12', 5, 'approved', 'uploads/1751130463_images.jpg'),
-(3, '364', 'a1', 10, 'approved', 'Uploads/1751191358_tres.png');
+(1, 'CƠM QUÊ', 'Trung tâm Q1', 4, 'approved', 'Uploads/1751449097_apple (2).png'),
+(2, 'UTH', 'Q12', 5, 'approved', 'Uploads/1751449109_applegr.png'),
+(3, '365', 'a1', 10, 'approved', 'Uploads/1751449121_person.png');
 
 -- --------------------------------------------------------
 
@@ -230,8 +148,8 @@ CREATE TABLE `reviews` (
 
 INSERT INTO `reviews` (`id`, `user_id`, `restaurant_id`, `rating`, `comment`, `created_at`) VALUES
 (3, 2, 2, 4, 'chậm', '2025-06-29 10:28:28'),
-(4, 2, 2, 3, 'chậm', '2025-06-29 11:24:47'),
-(5, 2, 2, 3, 'chậm', '2025-06-29 11:24:50');
+(5, 2, 2, 3, 'chậm', '2025-06-29 11:24:50'),
+(6, 2, 1, 5, 'ngonn', '2025-07-02 10:51:06');
 
 -- --------------------------------------------------------
 
@@ -257,8 +175,8 @@ INSERT INTO `users` (`id`, `username`, `password`, `role`, `email`, `created_at`
 (2, 'khai', '$2y$10$Lzt7Rm7RTxY4TBeKlEWFp.qJG75UdezpFe7JnuFUhsKdA0ssVMqua', 'user', 'ttdc52522023@gmail.com', '2025-06-28 16:25:50'),
 (4, 'tk', '$2y$10$41ynX4snxIcQcQMLXjBKD.nfa1P3GjrozD1Mpu35XCKrDhEPK3uP6', 'restaurant', 'ttdc52423422023@gmail.com', '2025-06-28 16:41:34'),
 (5, 'UTH', '$2y$10$ezvJYcWpzIhsDO.vO73rcuqOb.T93Z/NxJ86Ve2Lfy.05ToV7fuM6', 'restaurant', 'uth@gmail.com', '2025-06-28 17:06:48'),
-(9, 'trườngbro', '', 'user', 'truong@gmail.com', '2025-06-29 09:06:16'),
-(10, 'khanhu', '', 'restaurant', 'khanhu@gmail.com', '2025-06-29 09:56:43');
+(9, 'trườngb', '123', 'user', 'truongq@gmail.com', '2025-06-29 09:06:16'),
+(10, 'khanhu', '123', 'restaurant', 'khanhu@gmail.com', '2025-06-29 09:56:43');
 
 --
 -- Indexes for dumped tables
@@ -272,46 +190,6 @@ ALTER TABLE `complaints`
   ADD KEY `order_id` (`order_id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `restaurant_id` (`restaurant_id`);
-
---
--- Indexes for table `group_chats`
---
-ALTER TABLE `group_chats`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `complaint_id` (`complaint_id`);
-
---
--- Indexes for table `group_orders`
---
-ALTER TABLE `group_orders`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `menu_items`
---
-ALTER TABLE `menu_items`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `restaurant_id` (`restaurant_id`);
-
---
--- Indexes for table `menu_plans`
---
-ALTER TABLE `menu_plans`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `restaurant_id` (`restaurant_id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `messages`
---
-ALTER TABLE `messages`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `group_chat_id` (`group_chat_id`),
-  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `orders`
@@ -358,67 +236,37 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `complaints`
 --
 ALTER TABLE `complaints`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `group_chats`
---
-ALTER TABLE `group_chats`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `group_orders`
---
-ALTER TABLE `group_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `menu_items`
---
-ALTER TABLE `menu_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `menu_plans`
---
-ALTER TABLE `menu_plans`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `messages`
---
-ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `promotions`
 --
 ALTER TABLE `promotions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `restaurants`
 --
 ALTER TABLE `restaurants`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables
@@ -431,41 +279,6 @@ ALTER TABLE `complaints`
   ADD CONSTRAINT `complaints_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   ADD CONSTRAINT `complaints_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `complaints_ibfk_3` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants` (`id`);
-
---
--- Constraints for table `group_chats`
---
-ALTER TABLE `group_chats`
-  ADD CONSTRAINT `group_chats_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
-  ADD CONSTRAINT `group_chats_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `group_chats_ibfk_3` FOREIGN KEY (`complaint_id`) REFERENCES `complaints` (`id`);
-
---
--- Constraints for table `group_orders`
---
-ALTER TABLE `group_orders`
-  ADD CONSTRAINT `group_orders_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
-  ADD CONSTRAINT `group_orders_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `menu_items`
---
-ALTER TABLE `menu_items`
-  ADD CONSTRAINT `menu_items_ibfk_1` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants` (`id`);
-
---
--- Constraints for table `menu_plans`
---
-ALTER TABLE `menu_plans`
-  ADD CONSTRAINT `menu_plans_ibfk_1` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurants` (`id`),
-  ADD CONSTRAINT `menu_plans_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `messages`
---
-ALTER TABLE `messages`
-  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`group_chat_id`) REFERENCES `group_chats` (`id`),
-  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `orders`
